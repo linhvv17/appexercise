@@ -12,7 +12,7 @@ class UserRepo @Inject constructor(
         return userApi.getUsers()
     }
 
-    suspend fun getUserDetail(username: String): UserDetail {
-        return userApi.getDetailUser(username = username)
+    suspend fun getUserDetail(userName : String): UserDetail {
+        return userApi.getDetailUser(username = userName)
     }
 }

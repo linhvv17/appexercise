@@ -1,5 +1,6 @@
 package com.rikaimind.appexercise.ui.detail
 
+import android.app.Activity
 import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -17,18 +18,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.base.R
 import coil.compose.rememberImagePainter
 import coil.size.Scale
 import coil.transform.CircleCropTransformation
+import com.rikaimind.appexercise.data.api.UserApi
 import com.rikaimind.appexercise.data.api.model.User
 import com.rikaimind.appexercise.data.api.model.UserDetail
+import com.rikaimind.appexercise.data.repository.UserRepo
 import com.rikaimind.appexercise.ui.home.UserItem
 import com.rikaimind.appexercise.ui.home.UserViewModel
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -39,9 +47,13 @@ fun UserDetailScreenTest(userNameReceiver : String) {
     )
 }
 @Composable
-fun UserDetailScreen() {
-//    val userDetailViewModel = viewModel(modelClass = UserDetailViewModel::class.java)
-//    val state by userDetailViewModel.state.collectAsState()
+fun UserDetailScreen(userName : String) {
+    val userDetailViewModel = viewModel(modelClass = UserDetailViewModel::class.java)
+
+    val state by userDetailViewModel.state.collectAsState()
+    val activity = (LocalContext.current as? Activity)
+
+
 
     val scrollState = rememberScrollState()
 
@@ -58,15 +70,16 @@ fun UserDetailScreen() {
                 modifier =
                 Modifier.size(64.dp)
                     .clickable {
-
+                        activity?.finish()
                     }
+                    .align(Alignment.Start)
                 ,
                 contentDescription = null
             )
             //avatar
             Image(
                 painter = rememberImagePainter(
-                    data = "https://avatars.githubusercontent.com/u/2?v=4",
+                    data = state.avatar_url,
 
                     builder = {
                         scale(Scale.FILL)
@@ -88,11 +101,22 @@ fun UserDetailScreen() {
 
 
             Spacer(modifier = Modifier.height(16.dp))
-            Text(
-//                text = userDetailViewModel.state.value.name,
-                text = "defunkt",
-                style = MaterialTheme.typography.h3
-            )
+            state.name?.let {
+                Text(
+        //                text = userDetailViewModel.state.value.name,
+                    text = it,
+                    style = MaterialTheme.typography.h3,
+                )
+            }
+
+            state.bio?.let {
+                Text(
+        //                text = userDetailViewModel.state.value.name,
+                    text = it,
+                    style = MaterialTheme.typography.h3
+                )
+            }
+
             Spacer(modifier = Modifier.height(16.dp))
             Divider(
                 color = Color.Gray,
@@ -125,33 +149,26 @@ fun UserDetailScreen() {
                         .fillMaxHeight()
                         .weight(0.8f)
                 ) {
-                    Text(
-//                                text = user.login,
-                        text = "defunkt",
-                        style = MaterialTheme.typography.subtitle1,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    Box(
-                        modifier = Modifier.
-                        border(
-                            BorderStroke(2.dp, Color.Red),
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                            .background(Color.Magenta)
-                    ) {
+                    state.login?.let {
                         Text(
-//                                text = user.site_admin.toString(),
-                            text = "false",
-                            style = MaterialTheme.typography.caption,
-                            modifier = Modifier
-                                .background(
-                                    Color.LightGray
-                                )
-                                .padding(4.dp)
-
+                //                                text = user.login,
+                            text = it,
+                            style = MaterialTheme.typography.subtitle1,
+                            fontWeight = FontWeight.Bold
                         )
                     }
+
+                    Text(
+                        color = Color.White,
+                        text = "STAFF",
+                        style = MaterialTheme.typography.caption,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .width(80.dp)
+                            .height(30.dp)
+                            .padding(4.dp)
+                            .background(color = Color.Blue, shape = RoundedCornerShape(15.dp))
+                    )
 
 
                 }
@@ -180,12 +197,14 @@ fun UserDetailScreen() {
                         .fillMaxHeight()
                         .weight(0.8f)
                 ) {
-                    Text(
-//                                text = user.login,
-                        text = "San Francisco",
-                        style = MaterialTheme.typography.subtitle1,
-                        fontWeight = FontWeight.Bold
-                    )
+                    state.location?.let {
+                        Text(
+                //                                text = user.login,
+                            text = it,
+                            style = MaterialTheme.typography.subtitle1,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
 
                 }
             }
@@ -211,13 +230,15 @@ fun UserDetailScreen() {
                         .fillMaxHeight()
                         .weight(0.8f)
                 ) {
-                    Text(
-//                                text = user.login,
-                        text = "http://chriswanstrath.com/",
-                        style = MaterialTheme.typography.subtitle1,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Blue
-                    )
+                    state.blog?.let {
+                        Text(
+                //                                text = user.login,
+                            text = it,
+                            style = MaterialTheme.typography.subtitle1,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Blue
+                        )
+                    }
 
                 }
             }

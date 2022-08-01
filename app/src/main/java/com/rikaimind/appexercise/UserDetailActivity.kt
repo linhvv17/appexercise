@@ -11,6 +11,9 @@ import com.rikaimind.appexercise.ui.detail.UserDetailScreen
 import com.rikaimind.appexercise.ui.detail.UserDetailScreenTest
 import com.rikaimind.appexercise.ui.home.UserListScreen
 import com.rikaimind.appexercise.ui.theme.AppExerciseTheme
+import dagger.hilt.android.AndroidEntryPoint
+
+@AndroidEntryPoint
 
 class UserDetailActivity : ComponentActivity() {
 
@@ -35,7 +38,7 @@ class UserDetailActivity : ComponentActivity() {
 //                UserDetailScreenTest(
 //                    userNameReceiver = userName
 //                )
-                    UserDetailScreen()
+                    UserDetailScreen(userName)
                 }
             }
 

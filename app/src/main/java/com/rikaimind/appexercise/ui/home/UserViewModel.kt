@@ -1,6 +1,7 @@
 package com.rikaimind.appexercise.ui.home
 
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rikaimind.appexercise.data.api.model.User
@@ -22,7 +23,6 @@ class UserViewModel@Inject constructor(
 
 
     init {
-
         viewModelScope.launch {
             val users = userRepo.getUsers()
             _state.value = users

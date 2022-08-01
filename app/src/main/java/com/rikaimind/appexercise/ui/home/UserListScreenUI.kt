@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -48,16 +49,12 @@ fun UserListScreen(selectedItem: (User) -> Unit) {
 
         }
 
-        items(state) { user: User ->
-            UserItem(user = user, selectedItem = selectedItem)
-        }
-
-//        items(
-//            items = state,
-//            itemContent = {
-//                UserItem(user = it, selectedItem = selectedItem)
-//            }
-//        )
+        items(
+            items = state.take(100),//limit 100 items
+            itemContent = {
+                UserItem(user = it, selectedItem = selectedItem)
+            }
+        )
 
 
     }
@@ -117,15 +114,20 @@ fun UserItem(user: User, selectedItem: (User) -> Unit) {
                         style = MaterialTheme.typography.subtitle1,
                         fontWeight = FontWeight.Bold
                     )
-                    Text(
-                        text = user.site_admin.toString(),
-                        style = MaterialTheme.typography.caption,
-                        modifier = Modifier
-                            .background(
-                                Color.LightGray
-                            )
-                            .padding(4.dp)
-                    )
+                    if (!user.site_admin){
+                        Text(
+                            color = Color.White,
+                            text = "STAFF",
+                            style = MaterialTheme.typography.caption,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .width(80.dp)
+                                .height(30.dp)
+                                .padding(4.dp)
+                                .background(color = Color.Blue, shape = RoundedCornerShape(15.dp))
+                        )
+                    }
+
                 }
             }
         }
