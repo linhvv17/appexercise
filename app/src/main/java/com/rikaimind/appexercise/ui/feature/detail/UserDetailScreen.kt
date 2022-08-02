@@ -1,62 +1,44 @@
-package com.rikaimind.appexercise.ui.detail
+package com.rikaimind.appexercise.ui.feature.detail
 
-import android.app.Activity
 import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewModelScope
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.base.R
 import coil.compose.rememberImagePainter
 import coil.size.Scale
 import coil.transform.CircleCropTransformation
-import com.rikaimind.appexercise.data.api.UserApi
-import com.rikaimind.appexercise.data.api.model.User
-import com.rikaimind.appexercise.data.api.model.UserDetail
-import com.rikaimind.appexercise.data.repository.UserRepo
-import com.rikaimind.appexercise.ui.home.UserItem
-import com.rikaimind.appexercise.ui.home.UserViewModel
-import kotlinx.coroutines.launch
+import com.rikaimind.appexercise.ui.NavigationKeys.Route.USER_LIST
+import com.rikaimind.appexercise.ui.theme.TextColorBlog
+import com.rikaimind.appexercise.ui.theme.TextColorGrey
 
 
 @Composable
-fun UserDetailScreenTest(userNameReceiver : String) {
-    Text(
-        text = userNameReceiver,
-        style = MaterialTheme.typography.h3
-    )
-}
-@Composable
-fun UserDetailScreen(userName : String) {
-    val userDetailViewModel = viewModel(modelClass = UserDetailViewModel::class.java)
-
-    val state by userDetailViewModel.state.collectAsState()
-    val activity = (LocalContext.current as? Activity)
-
-
+fun UserDetailScreen(
+    state: UserDetailsContract.State,
+    navController: NavHostController
+) {
+    val userDetails = state.userDetail
 
     val scrollState = rememberScrollState()
 
+    if (userDetails != null) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -68,18 +50,22 @@ fun UserDetailScreen(userName : String) {
             Icon(
                 imageVector = Icons.Filled.Close,
                 modifier =
-                Modifier.size(64.dp)
-                    .clickable {
-                        activity?.finish()
-                    }
+                Modifier
+                    .size(64.dp)
                     .align(Alignment.Start)
-                ,
-                contentDescription = null
+                    .clickable {
+                        navController.popBackStack(
+//                            route = USER_LIST,
+//                            inclusive = false
+                        )
+                    },
+                contentDescription = null,
             )
+
             //avatar
             Image(
                 painter = rememberImagePainter(
-                    data = state.avatar_url,
+                    data = userDetails.avatar_url,
 
                     builder = {
                         scale(Scale.FILL)
@@ -91,32 +77,30 @@ fun UserDetailScreen(userName : String) {
                 contentDescription = null,
                 alignment = Alignment.Center,
                 modifier = Modifier
-                    .width(150.dp)
-                    .height(150.dp)
+                    .width(250.dp)
+                    .height(250.dp)
                     .fillMaxWidth()
                     .clip(shape = RoundedCornerShape(4.dp)),
                 contentScale = ContentScale.Fit
             )
-
-
-
-            Spacer(modifier = Modifier.height(16.dp))
-            state.name?.let {
+            Spacer(modifier = Modifier.height(30.dp))
+            userDetails.name?.let {
                 Text(
-        //                text = userDetailViewModel.state.value.name,
                     text = it,
                     style = MaterialTheme.typography.h3,
+                    fontSize = 30.sp
+
                 )
             }
 
-            state.bio?.let {
+            userDetails.bio?.let {
                 Text(
-        //                text = userDetailViewModel.state.value.name,
                     text = it,
-                    style = MaterialTheme.typography.h3
+                    style = MaterialTheme.typography.h3,
+                    fontSize = 20.sp,
+                    textAlign = TextAlign.Center
                 )
             }
-
             Spacer(modifier = Modifier.height(16.dp))
             Divider(
                 color = Color.Gray,
@@ -125,8 +109,7 @@ fun UserDetailScreen(userName : String) {
                 thickness = 1.dp
             )
 
-
-            //infor
+            //information
             Row(
                 modifier = Modifier
                     .padding(4.dp)
@@ -137,7 +120,7 @@ fun UserDetailScreen(userName : String) {
 
                 Icon(
                     imageVector = Icons.Filled.Person,
-                    modifier = Modifier.size(64.dp),
+                    modifier = Modifier.size(56.dp),
                     contentDescription = null
                 )
 
@@ -149,33 +132,34 @@ fun UserDetailScreen(userName : String) {
                         .fillMaxHeight()
                         .weight(0.8f)
                 ) {
-                    state.login?.let {
+                    userDetails.login?.let {
                         Text(
-                //                                text = user.login,
                             text = it,
                             style = MaterialTheme.typography.subtitle1,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            color = TextColorGrey
                         )
                     }
 
-                    Text(
-                        color = Color.White,
-                        text = "STAFF",
-                        style = MaterialTheme.typography.caption,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .width(80.dp)
-                            .height(30.dp)
-                            .padding(4.dp)
-                            .background(color = Color.Blue, shape = RoundedCornerShape(15.dp))
-                    )
+                    if (userDetails.site_admin){
+                        Text(
+                            color = Color.White,
+                            text = "STAFF",
+                            style = MaterialTheme.typography.caption,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .width(80.dp)
+                                .height(30.dp)
+                                .padding(4.dp)
+                                .background(color = Color.Blue, shape = RoundedCornerShape(15.dp))
+                        )
+                    }
+
 
 
                 }
             }
-
-
-
+            Spacer(modifier = Modifier.height(30.dp))
             //location
             Row(
                 modifier = Modifier
@@ -186,7 +170,7 @@ fun UserDetailScreen(userName : String) {
             ) {
                 Icon(
                     imageVector = Icons.Filled.LocationOn,
-                    modifier = Modifier.size(64.dp),
+                    modifier = Modifier.size(56.dp),
                     contentDescription = null
                 )
 
@@ -197,18 +181,19 @@ fun UserDetailScreen(userName : String) {
                         .fillMaxHeight()
                         .weight(0.8f)
                 ) {
-                    state.location?.let {
+                    userDetails.location?.let {
                         Text(
-                //                                text = user.login,
+                            //                                text = user.login,
                             text = it,
                             style = MaterialTheme.typography.subtitle1,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            color = TextColorGrey
                         )
                     }
 
                 }
             }
-
+            Spacer(modifier = Modifier.height(30.dp))
             //blog
             Row(
                 modifier = Modifier
@@ -218,8 +203,8 @@ fun UserDetailScreen(userName : String) {
 
             ) {
                 Icon(
-                    imageVector = Icons.Filled.MoreVert,
-                    modifier = Modifier.size(64.dp),
+                    imageVector = Icons.Filled.Share,
+                    modifier = Modifier.size(56.dp),
                     contentDescription = null
                 )
 
@@ -230,20 +215,31 @@ fun UserDetailScreen(userName : String) {
                         .fillMaxHeight()
                         .weight(0.8f)
                 ) {
-                    state.blog?.let {
+                    userDetails.blog?.let {
                         Text(
-                //                                text = user.login,
+                            //                                text = user.login,
                             text = it,
                             style = MaterialTheme.typography.subtitle1,
                             fontWeight = FontWeight.Bold,
-                            color = Color.Blue
+                            color = TextColorBlog
                         )
                     }
 
                 }
             }
-
-
         }
+    } else{
+        LoadingBar()
+    }
 
+
+}
+@Composable
+fun LoadingBar() {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        CircularProgressIndicator()
+    }
 }

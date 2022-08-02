@@ -13,7 +13,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object UserApiModule {
-
     @Provides
     @Singleton
     fun provideApi(builder:Retrofit.Builder): UserApi{

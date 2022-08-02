@@ -13,12 +13,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppExercise">
         <activity
-            android:name=".UserDetailActivity"
-            android:exported="true" />
-        <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
             android:theme="@style/Theme.AppExercise">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

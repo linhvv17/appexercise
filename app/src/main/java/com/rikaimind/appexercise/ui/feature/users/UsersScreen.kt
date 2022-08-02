@@ -1,79 +1,89 @@
-package com.rikaimind.appexercise.ui.home
+package com.rikaimind.appexercise.ui.feature.users
 
-import android.content.Intent
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCompositionContext
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat.startActivity
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.base.R
 import coil.compose.rememberImagePainter
 import coil.size.Scale
 import coil.transform.CircleCropTransformation
-import com.rikaimind.appexercise.UserDetailActivity
 import com.rikaimind.appexercise.data.api.model.User
-
+import com.rikaimind.appexercise.ui.theme.TextColorGrey
+import kotlinx.coroutines.flow.Flow
 
 
 @Composable
-fun UserListScreen(selectedItem: (User) -> Unit) {
-    val userViewModel = viewModel(modelClass = UserViewModel::class.java)
-    val state by userViewModel.state.collectAsState()
+fun UserListScreen(
+    state: UsersContract.State,
+    onNavigationRequested: (userName: String) -> Unit
+) {
+    val scaffoldState: ScaffoldState = rememberScaffoldState()
 
-    LazyColumn {
-        if (state.isEmpty()) {
-            item {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .wrapContentSize(align = Alignment.Center)
-                )
+    Scaffold(
+        scaffoldState = scaffoldState,
+    ) {
+        Box {
+            UsersList(users = state.users) { itemId ->
+                onNavigationRequested(itemId)
             }
-
+            if (state.isLoading)
+                LoadingBar()
         }
-
-        items(
-            items = state.take(100),//limit 100 items
-            itemContent = {
-                UserItem(user = it, selectedItem = selectedItem)
-            }
-        )
-
-
     }
 
 }
 
+@Composable
+fun LoadingBar() {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        CircularProgressIndicator()
+    }
+}
 
 
 @Composable
-fun UserItem(user: User, selectedItem: (User) -> Unit) {
+fun UsersList(
+    users: List<User>,
+    onItemClicked: (userName: String) -> Unit = { }
+) {
+    LazyColumn(
+        contentPadding = PaddingValues(bottom = 16.dp)
+    ) {
+        //Limit to 100 users with function take(n)
+        items(users.take(100)) { item ->
+            UserItem(user = item, selectedItem = onItemClicked)
+        }
+    }
+}
+
+
+
+
+
+
+@Composable
+fun UserItem(user: User, selectedItem: (String) -> Unit) {
     Card(
         modifier = Modifier
-            .clickable {
-                Log.d("click item", "CLICK")
-//                startActivity(Intent(rememberCompositionContext, UserDetailActivity::class.java))
-            }
+            .clickable { selectedItem(user.login) }
             .padding(8.dp, 4.dp)
             .fillMaxWidth()
-            .height(110.dp), shape = RoundedCornerShape(8.dp), elevation = 4.dp
+            .height(110.dp), shape = RoundedCornerShape(2.dp), elevation = 4.dp
     ) {
         Surface {
 
@@ -81,7 +91,7 @@ fun UserItem(user: User, selectedItem: (User) -> Unit) {
                 Modifier
                     .padding(4.dp)
                     .fillMaxSize()
-                    .clickable { selectedItem(user) },
+
             ) {
 
                 Image(
@@ -112,9 +122,10 @@ fun UserItem(user: User, selectedItem: (User) -> Unit) {
                     Text(
                         text = user.login,
                         style = MaterialTheme.typography.subtitle1,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = TextColorGrey
                     )
-                    if (!user.site_admin){
+                    if (user.site_admin){
                         Text(
                             color = Color.White,
                             text = "STAFF",
