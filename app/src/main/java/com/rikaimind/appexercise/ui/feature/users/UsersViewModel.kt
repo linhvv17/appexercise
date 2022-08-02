@@ -26,20 +26,12 @@ class UsersViewModel@Inject constructor(
             isLoading = true
         )
     )
-        private set
-
-    var effects = Channel<UsersContract.Effect>(Channel.UNLIMITED)
-        private set
-
 
     init {
         viewModelScope.launch {
             val users = userRepo.getUsers()
             state = state.copy(users = users, isLoading = false)
-            effects.send(UsersContract.Effect.DataWasLoaded)
         }
-
-
     }
 
 

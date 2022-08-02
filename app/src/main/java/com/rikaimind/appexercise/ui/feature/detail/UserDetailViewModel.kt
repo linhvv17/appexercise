@@ -25,7 +25,6 @@ class UserDetailViewModel
             null
         )
     )
-        private set
 
     init {
         viewModelScope.launch {

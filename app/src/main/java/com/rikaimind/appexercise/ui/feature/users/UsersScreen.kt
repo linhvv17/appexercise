@@ -21,7 +21,6 @@ import coil.size.Scale
 import coil.transform.CircleCropTransformation
 import com.rikaimind.appexercise.data.api.model.User
 import com.rikaimind.appexercise.ui.theme.TextColorGrey
-import kotlinx.coroutines.flow.Flow
 
 
 @Composable
@@ -36,7 +35,7 @@ fun UserListScreen(
     ) {
         Box {
             UsersList(users = state.users) { itemId ->
-                onNavigationRequested(itemId)
+                onNavigationRequested(itemId)//click item in list
             }
             if (state.isLoading)
                 LoadingBar()
@@ -66,14 +65,13 @@ fun UsersList(
     ) {
         //Limit to 100 users with function take(n)
         items(users.take(100)) { item ->
-            UserItem(user = item, selectedItem = onItemClicked)
+            UserItem(
+                user = item,
+                selectedItem = onItemClicked //click item in list
+            )
         }
     }
 }
-
-
-
-
 
 
 @Composable
@@ -86,23 +84,19 @@ fun UserItem(user: User, selectedItem: (String) -> Unit) {
             .height(110.dp), shape = RoundedCornerShape(2.dp), elevation = 4.dp
     ) {
         Surface {
-
             Row(
                 Modifier
                     .padding(4.dp)
                     .fillMaxSize()
 
             ) {
-
                 Image(
                     painter = rememberImagePainter(
                         data = user.avatar_url,
-
                         builder = {
                             scale(Scale.FILL)
                             placeholder(R.drawable.notification_action_background)
                             transformations(CircleCropTransformation())
-
                         }
                     ),
                     contentDescription = user.login,
@@ -110,8 +104,6 @@ fun UserItem(user: User, selectedItem: (String) -> Unit) {
                         .fillMaxHeight()
                         .weight(0.2f)
                 )
-
-
                 Column(
                     verticalArrangement = Arrangement.Center,
                     modifier = Modifier
@@ -138,7 +130,6 @@ fun UserItem(user: User, selectedItem: (String) -> Unit) {
                                 .background(color = Color.Blue, shape = RoundedCornerShape(15.dp))
                         )
                     }
-
                 }
             }
         }
