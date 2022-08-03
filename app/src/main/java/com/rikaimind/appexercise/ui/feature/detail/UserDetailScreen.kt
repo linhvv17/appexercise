@@ -1,6 +1,5 @@
 package com.rikaimind.appexercise.ui.feature.detail
 
-import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,14 +16,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.base.R
 import coil.compose.rememberImagePainter
 import coil.size.Scale
 import coil.transform.CircleCropTransformation
-import com.rikaimind.appexercise.ui.NavigationKeys.Route.USER_LIST
 import com.rikaimind.appexercise.ui.theme.TextColorBlog
 import com.rikaimind.appexercise.ui.theme.TextColorGrey
 
@@ -54,10 +50,7 @@ fun UserDetailScreen(
                     .size(64.dp)
                     .align(Alignment.Start)
                     .clickable {
-                        navController.popBackStack(
-//                            route = USER_LIST,
-//                            inclusive = false
-                        )
+                        navController.popBackStack()//process back to previous screen when click button close
                     },
                 contentDescription = null,
             )

@@ -67,7 +67,7 @@ private fun UsersDestination(navController: NavHostController) {
     UserListScreen(
         state = viewModel.state,
         onNavigationRequested = { itemId ->
-            navController.navigate("${NavigationKeys.Route.USER_LIST}/${itemId}")
+            navController.navigate("${NavigationKeys.Route.USER_LIST}/${itemId}")//process when click user item
         })
 }
 

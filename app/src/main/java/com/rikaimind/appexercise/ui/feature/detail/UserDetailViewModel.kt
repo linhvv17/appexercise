@@ -28,9 +28,12 @@ class UserDetailViewModel
 
     init {
         viewModelScope.launch {
+            //get userName from action navigation when click user item in list users
             val userName = stateHandle.get<String>(NavigationKeys.Arg.USER_NAME)
                 ?: throw IllegalStateException("No userName was passed to destination.")
+            //get user details
             val userDetail = userRepo.getUserDetail(userName)
+            //update user details
             state = state.copy(userDetail = userDetail)
         }
     }
