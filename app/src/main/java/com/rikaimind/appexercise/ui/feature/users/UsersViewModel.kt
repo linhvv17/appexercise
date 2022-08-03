@@ -25,8 +25,8 @@ class UsersViewModel@Inject constructor(
 
     init {
         viewModelScope.launch {
-            //get list of users
-            val users = userRepo.getUsers()
+            //get user list limited to 100 users
+            val users = userRepo.getUsers(100)
             //update list user
             state = state.copy(users = users, isLoading = false)
         }

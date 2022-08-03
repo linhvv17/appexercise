@@ -11,8 +11,8 @@ class UserRepo @Inject constructor(
     private val userApi: UserApi
 ) {
     //get list of users
-    suspend fun getUsers(): List<User> {
-        return userApi.getUsers()
+    suspend fun getUsers(pageSize: Int): List<User> {
+        return userApi.getUsers(pageSize = pageSize)
     }
 
     //get user details

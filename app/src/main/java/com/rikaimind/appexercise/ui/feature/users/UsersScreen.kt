@@ -63,8 +63,8 @@ fun UsersList(
     LazyColumn(
         contentPadding = PaddingValues(bottom = 16.dp)
     ) {
-        //Limit to 100 users with function take(n)
-        items(users.take(100)) { item ->
+
+        items(users) { item ->
             UserItem(
                 user = item,
                 selectedItem = onItemClicked //click item in list
